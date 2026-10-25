@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BuildU - Penetration Testing OS</title>
+  <meta name="description" content="BuildU - Advanced Penetration Testing & Cybersecurity OS Simulation" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- BOOT SCREEN -->
+<div id="boot-screen">
+  <canvas id="matrix-canvas"></canvas>
+  <div class="boot-content">
+    <div class="boot-logo">
+      <svg class="dragon-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+            <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+        <path d="M100,30 C120,20 150,40 160,70 C170,100 155,130 135,145 C115,160 85,155 70,140 C55,125 50,100 60,75 C70,50 80,40 100,30Z" fill="none" stroke="#00d4ff" stroke-width="2" filter="url(#glow)" opacity="0.8"/>
+        <path d="M100,30 L130,60 L120,90 L100,80 L80,90 L70,60Z" fill="none" stroke="#b000ff" stroke-width="1.5" filter="url(#glow)"/>
+        <circle cx="85" cy="75" r="5" fill="#00d4ff" filter="url(#glow)"/>
+        <circle cx="115" cy="75" r="5" fill="#00d4ff" filter="url(#glow)"/>
+        <path d="M60,120 C40,130 20,115 25,95 C30,75 50,70 65,80" fill="none" stroke="#00d4ff" stroke-width="1.5" filter="url(#glow)"/>
+        <path d="M140,120 C160,130 180,115 175,95 C170,75 150,70 135,80" fill="none" stroke="#00d4ff" stroke-width="1.5" filter="url(#glow)"/>
+        <path d="M80,155 C75,170 65,180 55,175 C60,165 55,155 60,145" fill="none" stroke="#b000ff" stroke-width="1.5" filter="url(#glow)"/>
+        <path d="M120,155 C125,170 135,180 145,175 C140,165 145,155 140,145" fill="none" stroke="#b000ff" stroke-width="1.5" filter="url(#glow)"/>
+      </svg>
+    </div>
+    <h1 class="boot-title">BUILD<span class="accent-u">U</span></h1>
+    <p class="boot-subtitle">Cybersecurity & Penetration Testing OS</p>
+    <div class="boot-log" id="boot-log"></div>
+    <div class="boot-progress-container">
+      <div class="boot-progress" id="boot-progress"></div>
+    </div>
+  </div>
+</div>
+
+<!-- LOGIN SCREEN -->
+<div id="login-screen" style="display:none;">
+  <canvas id="login-canvas"></canvas>
+  <div class="login-box">
+    <div class="login-logo">
+      <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" width="80" height="80">
+        <circle cx="40" cy="40" r="35" fill="none" stroke="#00d4ff" stroke-width="1.5" opacity="0.5"/>
+        <circle cx="40" cy="40" r="20" fill="none" stroke="#b000ff" stroke-width="1" opacity="0.7"/>
+        <path d="M25,40 L40,20 L55,40 L40,60Z" fill="none" stroke="#00d4ff" stroke-width="1.5"/>
+      </svg>
+    </div>
+    <h2>Build<span class="accent-u">U</span></h2>
+    <p class="login-hostname">root@buildu:~</p>
+    <div class="login-field">
+      <label>Username</label>
+      <input type="text" id="login-user" value="root" autocomplete="off" />
+    </div>
+    <div class="login-field">
+      <label>Password</label>
+      <input type="password" id="login-pass" placeholder="••••••••" autocomplete="off" />
+    </div>
+    <button id="login-btn" onclick="doLogin()">LOGIN →</button>
+    <p class="login-hint">Default: root / toor</p>
+  </div>
+</div>
+
+<!-- DESKTOP -->
+<div id="desktop" style="display:none;">
+  <!-- Taskbar -->
+  <div id="taskbar">
+    <div id="taskbar-left">
+      <button class="taskbar-menu-btn" id="app-menu-btn" onclick="toggleAppMenu()" title="Applications">
+        <span class="menu-icon">⊞</span> Applications
+      </button>
+    </div>
+    <div id="taskbar-center">
+      <div id="taskbar-windows"></div>
+    </div>
+    <div id="taskbar-right">
+      <div class="tray-item" id="tray-theme-btn" onclick="toggleThemeQuick()" title="Theme Switcher">🎨</div>
+      <div class="tray-item tray-wifi" id="tray-wifi-btn" onclick="toggleControlCenter()" title="Network Status">📶</div>
+      <div class="tray-item tray-sound" id="tray-sound-btn" onclick="toggleControlCenter()" title="Volume & Control Center">🔊</div>
+      <div class="tray-item" id="tray-time" onclick="toggleControlCenter()" title="Time & Control Center"></div>
+      <div class="tray-item" id="tray-user" onclick="showAbout()" title="System Profile">root@buildu</div>
+    </div>
+  </div>
+
+  <!-- Desktop Icons -->
+  <div id="desktop-icons">
+    <div class="desktop-icon" ondblclick="openApp('terminal')" id="icon-terminal">
+      <div class="icon-img">💻</div><span>Terminal</span>
+    </div>
+    <div class="desktop-icon" ondblclick="openApp('filemanager')" id="icon-fm">
+      <div class="icon-img">📁</div><span>Files</span>
+    </div>
+    <div class="desktop-icon" ondblclick="openApp('nmap')" id="icon-nmap">
+      <div class="icon-img">🌐</div><span>Nmap Scanner</span>
+    </div>
+    <div class="desktop-icon" ondblclick="openApp('hashcracker')" id="icon-hash">
+      <div class="icon-img">🔐</div><span>Hash Cracker</span>
+    </div>
+    <div class="desktop-icon" ondblclick="openApp('sqlmap')" id="icon-sql">
+      <div class="icon-img">💉</div><span>SQLMap</span>
+    </div>
+    <div class="desktop-icon" ondblclick="openApp('metasploit')" id="icon-msf">
+      <div class="icon-img">🎯</div><span>Metasploit</span>
+    </div>
+    <div class="desktop-icon" ondblclick="openApp('wireshark')" id="icon-wire">
+      <div class="icon-img">📡</div><span>Wireshark</span>
+    </div>
+    <div class="desktop-icon" ondblclick="openApp('aircrack')" id="icon-air">
+      <div class="icon-img">📻</div><span>Aircrack-ng</span>
+    </div>
+    <div class="desktop-icon" ondblclick="openApp('burpsuite')" id="icon-burp">
+      <div class="icon-img">🔥</div><span>Burp Suite</span>
+    </div>
+    <div class="desktop-icon" ondblclick="openApp('hydra')" id="icon-hydra">
+      <div class="icon-img">🐉</div><span>Hydra</span>
+    </div>
+    <div class="desktop-icon" ondblclick="openApp('john')" id="icon-john">
+      <div class="icon-img">🗝️</div><span>John the Ripper</span>
+    </div>
+    <div class="desktop-icon" ondblclick="openApp('browser')" id="icon-browser">
+      <div class="icon-img">🌍</div><span>Browser</span>
+    </div>
+    <div class="desktop-icon" ondblclick="openApp('texteditor')" id="icon-editor">
+      <div class="icon-img">📝</div><span>Text Editor</span>
+    </div>
+    <div class="desktop-icon" ondblclick="openApp('settings')" id="icon-settings">
+      <div class="icon-img">⚙️</div><span>Settings</span>
+    </div>
+    <div class="desktop-icon" ondblclick="openApp('sysinfo')" id="icon-sysinfo">
+      <div class="icon-img">📊</div><span>System Info</span>
+    </div>
+    <div class="desktop-icon" ondblclick="openApp('mcphub')" id="icon-mcphub">
+      <div class="icon-img">⚡</div><span>MCP Hub</span>
+    </div>
+    <div class="desktop-icon" ondblclick="openApp('aicopilot')" id="icon-copilot">
+      <div class="icon-img">🤖</div><span>AI Copilot</span>
+    </div>
+  </div>
+
+  <!-- App Menu -->
+  <div id="app-menu" style="display:none;">
+    <div class="app-menu-search">
+      <input type="text" placeholder="🔍 Search applications..." id="app-search" oninput="filterApps()" />
+    </div>
+    <div class="app-menu-categories">
+      <div class="app-category">
+        <div class="category-title">01. Information Gathering</div>
+        <div class="app-item" onclick="openApp('nmap')">🌐 Nmap / Network Scanner</div>
+        <div class="app-item" onclick="openApp('whois')">🔍 Whois Lookup</div>
+        <div class="app-item" onclick="openApp('dnslookup')">📡 DNS Lookup</div>
+        <div class="app-item" onclick="openApp('traceroute')">🗺️ Traceroute</div>
+        <div class="app-item" onclick="openApp('subdomains')">🕸️ Subdomain Finder</div>
+      </div>
+      <div class="app-category">
+        <div class="category-title">02. Vulnerability Analysis</div>
+        <div class="app-item" onclick="openApp('nikto')">🛡️ Nikto Web Scanner</div>
+        <div class="app-item" onclick="openApp('openvas')">🔬 OpenVAS</div>
+        <div class="app-item" onclick="openApp('wpscan')">📰 WPScan</div>
+      </div>
+      <div class="app-category">
+        <div class="category-title">03. Web Application Attack</div>
+        <div class="app-item" onclick="openApp('sqlmap')">💉 SQLMap</div>
+        <div class="app-item" onclick="openApp('burpsuite')">🔥 Burp Suite</div>
+        <div class="app-item" onclick="openApp('xsshunter')">⚡ XSS Hunter</div>
+        <div class="app-item" onclick="openApp('dirb')">📂 DirBuster</div>
+      </div>
+      <div class="app-category">
+        <div class="category-title">04. Password Attacks</div>
+        <div class="app-item" onclick="openApp('hashcracker')">🔐 Hash Cracker</div>
+        <div class="app-item" onclick="openApp('john')">🗝️ John the Ripper</div>
+        <div class="app-item" onclick="openApp('hydra')">🐉 Hydra</div>
+        <div class="app-item" onclick="openApp('wordlist')">📋 Wordlist Generator</div>
+      </div>
+      <div class="app-category">
+        <div class="category-title">05. Wireless Attacks</div>
+        <div class="app-item" onclick="openApp('aircrack')">📻 Aircrack-ng</div>
+        <div class="app-item" onclick="openApp('wifianalyzer')">📶 WiFi Analyzer</div>
+        <div class="app-item" onclick="openApp('kismet')">📡 Kismet</div>
+      </div>
+      <div class="app-category">
+        <div class="category-title">06. Exploitation Tools</div>
+        <div class="app-item" onclick="openApp('metasploit')">🎯 Metasploit Framework</div>
+        <div class="app-item" onclick="openApp('setoolkit')">🎭 Social Engineer Toolkit</div>
+        <div class="app-item" onclick="openApp('shellgen')">🐚 Shellcode Generator</div>
+      </div>
+      <div class="app-category">
+        <div class="category-title">07. Sniffing & Spoofing</div>
+        <div class="app-item" onclick="openApp('wireshark')">📡 Wireshark</div>
+        <div class="app-item" onclick="openApp('arpspoof')">⚠️ ARP Spoofer</div>
+        <div class="app-item" onclick="openApp('sslstrip')">🔓 SSLStrip</div>
+      </div>
+      <div class="app-category">
+        <div class="category-title">08. Forensics</div>
+        <div class="app-item" onclick="openApp('binwalk')">🔎 Binwalk</div>
+        <div class="app-item" onclick="openApp('autopsy')">🔬 Autopsy</div>
+        <div class="app-item" onclick="openApp('steghide')">🖼️ Steghide</div>
+      </div>
+      <div class="app-category">
+        <div class="category-title">09. AI & Model Context Protocol (MCP)</div>
+        <div class="app-item" onclick="openApp('mcphub')">⚡ MCP Hub / Server Manager</div>
+        <div class="app-item" onclick="openApp('aicopilot')">🤖 AI Pentest Copilot (MCP Agent)</div>
+      </div>
+      <div class="app-category">
+        <div class="category-title">System</div>
+        <div class="app-item" onclick="openApp('terminal')">💻 Terminal</div>
+        <div class="app-item" onclick="openApp('filemanager')">📁 File Manager</div>
+        <div class="app-item" onclick="openApp('texteditor')">📝 Text Editor</div>
+        <div class="app-item" onclick="openApp('browser')">🌍 Browser</div>
+        <div class="app-item" onclick="openApp('sysinfo')">📊 System Info</div>
+        <div class="app-item" onclick="openApp('settings')">⚙️ Settings</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Windows Container -->
+  <div id="windows-container"></div>
+
+  <!-- Context Menu -->
+  <div id="context-menu" style="display:none;">
+    <div class="ctx-item" onclick="openApp('terminal')">Open Terminal</div>
+    <div class="ctx-sep"></div>
+    <div class="ctx-item" onclick="changeWallpaper()">Change Wallpaper</div>
+    <div class="ctx-item" onclick="toggleThemeQuick()">Switch Theme</div>
+    <div class="ctx-item" onclick="openApp('settings')">Settings</div>
+    <div class="ctx-sep"></div>
+    <div class="ctx-item" onclick="showAbout()">About BuildU</div>
+  </div>
+
+  <!-- Control Center Dropdown -->
+  <div id="control-center" style="display:none;">
+    <div class="cc-header">
+      <span class="cc-title">⚡ BuildU Control Center</span>
+      <span class="cc-close" onclick="toggleControlCenter()">✕</span>
+    </div>
+    <div class="cc-section">
+      <div class="cc-label">System Appearance</div>
+      <div class="cc-themes">
+        <button class="cc-theme-btn active" data-theme="cyberpunk" onclick="setTheme('cyberpunk', this)">Cyber Cyan</button>
+        <button class="cc-theme-btn" data-theme="kali-red" onclick="setTheme('kali-red', this)">Kali Crimson</button>
+        <button class="cc-theme-btn" data-theme="matrix" onclick="setTheme('matrix', this)">Matrix Neon</button>
+        <button class="cc-theme-btn" data-theme="midnight-blue" onclick="setTheme('midnight-blue', this)">Cobalt Blue</button>
+        <button class="cc-theme-btn" data-theme="stealth-oled" onclick="setTheme('stealth-oled', this)">Stealth OLED</button>
+      </div>
+    </div>
+    <div class="cc-section">
+      <div class="cc-label">Audio & Haptic Feedback</div>
+      <div class="cc-slider-row">
+        <span>🔊</span>
+        <input type="range" id="cc-volume" min="0" max="100" value="75" oninput="setAudioVolume(this.value)" />
+        <span id="cc-vol-val">75%</span>
+      </div>
+    </div>
+    <div class="cc-section">
+      <div class="cc-label">Active Network</div>
+      <div class="cc-net-status">
+        <span class="net-dot online"></span> <span><strong>buildu-sec-corp</strong> (192.168.1.100)</span>
+      </div>
+    </div>
+    <div class="cc-section cc-actions">
+      <button class="cc-action-btn" onclick="openApp('settings')">⚙️ Settings</button>
+      <button class="cc-action-btn" onclick="changeWallpaper()">🖼️ Wallpaper</button>
+      <button class="cc-action-btn" onclick="openApp('sysinfo')">📊 Telemetry</button>
+      <button class="cc-action-btn danger" onclick="lockScreen()">🔒 Lock OS</button>
+    </div>
+  </div>
+
+  <!-- Toast Notification Center -->
+  <div id="toast-container"></div>
+</div>
+
+<!-- About Modal -->
+<div id="about-modal" style="display:none;">
+  <div class="about-box">
+    <h2>Build<span class="accent-u">U</span> OS v1.0</h2>
+    <p>Enterprise-grade Cybersecurity & Penetration Testing OS</p>
+    <p>Inspired by Kali Linux & BlackArch</p>
+    <hr>
+    <p>Kernel: BuildU-5.15.0-pentest-x86_64</p>
+    <p>Desktop: BuildU-Glass DE (Hardware Accelerated)</p>
+    <p>Tooling: 600+ Security Tools & Stateful VFS Engine</p>
+    <button onclick="closeAbout()">Close</button>
+  </div>
+</div>
+
+<script type="module" src="/main.js"></script>
+</body>
+</html>
